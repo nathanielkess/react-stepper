@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import { Stepper } from './components';
 import Hello from './Hello';
 import './style.css';
 
-interface AppProps { }
+interface AppProps {}
 interface AppState {
   name: string;
 }
@@ -20,9 +21,18 @@ class App extends Component<AppProps, AppState> {
     return (
       <div>
         <Hello name={this.state.name} />
-        <p>
-          Start editing to see some magic happen :)
-        </p>
+        <p>Start editing to see some magic happen :)</p>
+        <Stepper>
+          <Stepper.Step>
+            <p>one</p>
+          </Stepper.Step>
+          <Stepper.Step>
+            <p>two</p>
+          </Stepper.Step>
+          <Stepper.Step>
+            <p>three</p>
+          </Stepper.Step>
+        </Stepper>
       </div>
     );
   }
