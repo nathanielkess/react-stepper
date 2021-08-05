@@ -4,9 +4,13 @@ import React, {
   PropsWithRef,
   ReactChild,
   ReactChildren,
-  RefAttributes
+  RefAttributes,
+  useCallback,
+  useImperativeHandle
 } from 'react';
+import { StepperContext } from './stepper.context';
 import { Step } from './step';
+const noop = () => {};
 
 export interface IStepperRef {
   goTo: (index: number) => void;
@@ -23,8 +27,36 @@ export interface CompoundedComponent
 }
 
 export const Stepper = forwardRef<IStepperRef, PropsWithRef<Props>>(
-  ({ children }, ref) => {
-    return <p>{children}</p>;
+  ({ children, onChange = noop }, ref) => {
+    const [currentStep, setCurrentStep] = React.useState({
+      currentIndex: 0,
+      prevIndex: -1
+    });
+
+    const goTo = useCallback(
+      (index: number) => {
+        onChange(index);
+        setCurrentStep(prev => ({
+          currentIndex: index,
+          prevIndex: prev
+        }));
+      },
+      [currentStep]
+    );
+
+    useImperativeHandle(ref, () => ({ goTo }));
+
+    return (
+      <div>
+        <StepperContext.Provider value={currentStep}>
+          {React.Children.map(children, (child, index) => {
+            return React.cloneElement(child, {
+              index //<-- injects index as a prop
+            });
+          })}
+        </StepperContext.Provider>
+      </div>
+    );
   }
 ) as CompoundedComponent;
 
